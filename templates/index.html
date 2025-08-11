@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Discord Self-Bot Control Panel</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1e1e1e; color: white; text-align: center; }
+        .headbar { background: red; padding: 10px; font-weight: bold; }
+        .status { margin: 20px; padding: 10px; border-radius: 5px; display: inline-block; }
+        .running { background: green; }
+        .stopped { background: gray; }
+        .error { color: red; margin-top: 15px; }
+        input, button { padding: 10px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <div class="headbar">⚠ Hanya untuk akun percobaan. Jangan gunakan di akun utama.</div>
+
+    <h1>Discord Self-Bot Control Panel</h1>
+
+    <div class="status {{ 'running' if running else 'stopped' }}">
+        {{ 'Bot Aktif' if running else 'Bot Mati' }}
+    </div>
+
+    {% if error %}
+        <div class="error">Error: {{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+        <input type="text" name="token" placeholder="Masukkan Token" required><br>
+        <input type="text" name="reply" placeholder="Pesan Balasan" required><br>
+        <button type="submit" name="start">Start Bot</button>
+        <button type="submit" name="stop">Stop Bot</button>
+    </form>
+</body>
+</html>
