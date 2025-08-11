@@ -143,6 +143,28 @@ def index():
                            error=bot_error,
                            discord_import_error=DISCORD_IMPORT_ERROR)
 
+# Tambahkan di bagian atas sebelum bot dijalankan
+responded_users = set()
+
+@client.event
+async def on_message(message):
+    global responded_users
+    
+    # Jangan balas pesan sendiri
+    if message.author.id == client.user.id:
+        return
+
+    # Jika user sudah pernah dibalas, lewati
+    if message.author.id in responded_users:
+        return
+
+    # Balas pesan
+    try:
+        await message.channel.send(reply_message)
+        responded_users.add(message.author.id)  # Simpan ID user yang sudah dibalas
+        print(f"[INFO] Replied once to: {message.author} ({message.author.id})")
+    except Exception as e:
+        print(f"[ERROR] Failed to send message to {message.author}: {e}")
 
 @app.route("/start", methods=["POST"])
 def start():
