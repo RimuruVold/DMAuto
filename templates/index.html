@@ -1,35 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Discord Self-Bot Control Panel</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #1e1e1e; color: white; text-align: center; }
-        .headbar { background: red; padding: 10px; font-weight: bold; }
-        .status { margin: 20px; padding: 10px; border-radius: 5px; display: inline-block; }
-        .running { background: green; }
-        .stopped { background: gray; }
-        .error { color: red; margin-top: 15px; }
-        input, button { padding: 10px; margin: 5px; }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Discord Auto Reply — Cyberpanel</title>
+  <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <div class="headbar">⚠ Hanya untuk akun percobaan. Jangan gunakan di akun utama.</div>
-
-    <h1>Discord Self-Bot Control Panel</h1>
-
-    <div class="status {{ 'running' if running else 'stopped' }}">
-        {{ 'Bot Aktif' if running else 'Bot Mati' }}
+  <!-- moving headbar -->
+  <div class="headbar">
+    <div class="marquee">
+      ⚠ FOR LAB USE ONLY — USE ONLY WITH TEST ACCOUNTS ⚠ &nbsp;&nbsp; • &nbsp;&nbsp; DO NOT USE WITH MAIN ACCOUNT &nbsp;&nbsp; • &nbsp;&nbsp; FOR DEMO/RESEARCH ONLY
     </div>
+  </div>
 
-    {% if error %}
-        <div class="error">Error: {{ error }}</div>
-    {% endif %}
+  <main class="container">
+    <section class="left">
+      <h1 class="main-title">DISCORD AUTO REPLY</h1>
+      <p class="subtitle">Dark • Futuristic • Turquoise</p>
 
-    <form method="POST">
-        <input type="text" name="token" placeholder="Masukkan Token" required><br>
-        <input type="text" name="reply" placeholder="Pesan Balasan" required><br>
-        <button type="submit" name="start">Start Bot</button>
-        <button type="submit" name="stop">Stop Bot</button>
-    </form>
+      <div class="card control-card">
+        <form method="POST">
+          <label>Discord User Token</label>
+          <input name="token" type="password" placeholder="Masukkan token akun percobaan" required>
+
+          <label>Pesan balasan</label>
+          <input name="reply" type="text" placeholder="Contoh: hai join my ps" required>
+
+          <div class="buttons">
+            <button name="action" value="start" class="btn start">Start Bot</button>
+            <button name="action" value="stop" class="btn stop">Stop Bot</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card info-card">
+        <div class="status-row">
+          <div class="status-label">Status</div>
+          <div class="status-bubble {{ 'on' if running else 'off' }}">
+            {{ 'Aktif' if running else 'Mati' }}
+          </div>
+        </div>
+
+        {% if error %}
+          <div class="error-block">
+            <strong>Error:</strong>
+            <pre>{{ error }}</pre>
+          </div>
+        {% elif discord_import_error %}
+          <div class="error-block">
+            <strong>Library error:</strong>
+            <pre>Discord library not found or failed to import. Install discord.py-self and restart.</pre>
+          </div>
+        {% else %}
+          <div class="hint">No errors detected.</div>
+        {% endif %}
+      </div>
+    </section>
+
+    <aside class="right">
+      <div class="glow-panel">
+        <h3>Live Panel</h3>
+        <p class="muted">Realtime log area (basic):</p>
+        <div class="log">
+          <div class="log-line">▶ UI ready. Use token of test account only.</div>
+          {% if running %}
+            <div class="log-line">● Bot thread running.</div>
+          {% else %}
+            <div class="log-line">● Bot is stopped.</div>
+          {% endif %}
+          {% if error %}
+            <div class="log-line error">✖ {{ error.splitlines()[0] }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card small">
+        <h4>Notes</h4>
+        <ul>
+          <li>Use only test accounts.</li>
+          <li>Server must keep running to keep the bot active.</li>
+          <li>Do not share tokens.</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <div>© Cyberpanel · demo</div>
+  </footer>
 </body>
 </html>
