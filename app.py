@@ -1,93 +1,76 @@
 from flask import Flask, render_template, request
 import threading
-import os
+import discord
+from discord.ext import commands
 
 app = Flask(__name__)
 
-running = False
+# Variabel global
 bot_thread = None
-error_message = None
-
-# Simpan daftar ID user yang sudah pernah dibalas
-already_replied_users = set()
-
-try:
-    import discord
-    from discord.ext import commands
-    discord_import_error = False
-except ImportError:
-    discord_import_error = True
-
+running = False
+error = None
+discord_import_error = False
 bot_instance = None
+responded_users = set()  # Menyimpan user yang sudah dibalas
 
-def run_bot(token, reply_message):
-    global running, error_message, bot_instance, already_replied_users
-    try:
-        intents = discord.Intents.default()
-        intents.messages = True
-        intents.message_content = True
+# Fungsi untuk membuat bot
+def create_bot(token, reply_message):
+    intents = discord.Intents.default()
+    intents.messages = True
+    intents.dm_messages = True
+    intents.message_content = True
 
-        bot = commands.Bot(command_prefix="!", self_bot=True, intents=intents)
-        bot_instance = bot
+    bot = commands.Bot(command_prefix="!", self_bot=True, intents=intents)
 
-        # Kosongkan daftar user setiap kali bot dijalankan ulang
-        already_replied_users.clear()
+    @bot.event
+    async def on_ready():
+        print(f"Logged in as {bot.user}")
 
-        @bot.event
-        async def on_ready():
-            print(f"Bot logged in as {bot.user}")
-
-        @bot.event
-        async def on_message(message):
-            global already_replied_users
-            # Jangan balas diri sendiri
-            if message.author.id == bot.user.id:
-                return
-
-            # Jika user belum pernah dibalas
-            if message.author.id not in already_replied_users:
+    @bot.event
+    async def on_message(message):
+        if message.author.id == bot.user.id:
+            return
+        
+        if isinstance(message.channel, discord.DMChannel):
+            # Balas hanya sekali per user
+            if message.author.id not in responded_users:
                 try:
                     await message.channel.send(reply_message)
-                    already_replied_users.add(message.author.id)
-                    print(f"Replied to {message.author} ({message.author.id})")
+                    responded_users.add(message.author.id)
+                    print(f"Balas ke: {message.author} ({message.author.id})")
                 except Exception as e:
-                    print(f"Error replying to {message.author}: {e}")
+                    print(f"Error saat balas: {e}")
 
-        running = True
-        bot.run(token)
-    except Exception as e:
-        error_message = str(e)
-        running = False
+    bot.run(token)
 
-
+# Halaman utama
 @app.route("/", methods=["GET", "POST"])
 def index():
-    global running, bot_thread, error_message, bot_instance
+    global bot_thread, running, error, discord_import_error, bot_instance
 
     if request.method == "POST":
         action = request.form.get("action")
         token = request.form.get("token")
-        reply_message = request.form.get("reply")
+        reply = request.form.get("reply")
 
         if action == "start" and not running:
-            if discord_import_error:
-                error_message = "Discord library not installed."
-            else:
-                error_message = None
-                bot_thread = threading.Thread(target=run_bot, args=(token, reply_message))
-                bot_thread.start()
-
-        elif action == "stop" and running:
+            error = None
             try:
-                if bot_instance:
-                    bot_instance.loop.call_soon_threadsafe(bot_instance.loop.stop)
+                bot_thread = threading.Thread(target=create_bot, args=(token, reply), daemon=True)
+                bot_thread.start()
+                running = True
+            except ImportError:
+                discord_import_error = True
                 running = False
             except Exception as e:
-                error_message = str(e)
+                error = str(e)
+                running = False
 
-    return render_template("index.html", running=running, error=error_message, discord_import_error=discord_import_error)
+        elif action == "stop" and running:
+            # Tidak ada cara resmi stop self-bot discord.py, biasanya restart server
+            running = False
 
+    return render_template("index.html", running=running, error=error, discord_import_error=discord_import_error)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=8080)
