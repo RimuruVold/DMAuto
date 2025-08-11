@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Discord Auto Reply — Cyberpanel</title>
-  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- moving headbar -->
@@ -20,7 +20,8 @@
       <p class="subtitle">Dark • Futuristic • Turquoise</p>
 
       <div class="card control-card">
-        <form method="POST">
+        <!-- Form START bot -->
+        <form action="/start" method="POST">
           <label>Discord User Token</label>
           <input name="token" type="password" placeholder="Masukkan token akun percobaan" required>
 
@@ -28,8 +29,14 @@
           <input name="reply" type="text" placeholder="Contoh: hai join my ps" required>
 
           <div class="buttons">
-            <button name="action" value="start" class="btn start">Start Bot</button>
-            <button name="action" value="stop" class="btn stop">Stop Bot</button>
+            <button type="submit" class="btn start">Start Bot</button>
+          </div>
+        </form>
+
+        <!-- Form STOP bot -->
+        <form action="/stop" method="POST" style="margin-top:10px;">
+          <div class="buttons">
+            <button type="submit" class="btn stop">Stop Bot</button>
           </div>
         </form>
       </div>
