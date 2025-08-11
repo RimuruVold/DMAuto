@@ -40,6 +40,8 @@ def index():
 def start_bot():
     token = request.form.get("token")
     message = request.form.get("message")
+    # Jalankan bot atau proses sesuai kebutuhan
+    return "Bot berhasil dijalankan!"
 
     if not token or not message:
         return jsonify({"error": "Token dan pesan wajib diisi!"}), 400
