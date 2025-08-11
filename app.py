@@ -135,14 +135,6 @@ def _run_bot(token, reply_message):
         discord_client = None
         print("[run_bot] client ended.")
 
-
-@app.route("/", methods=["GET"])
-def index():
-    return render_template("index.html",
-                           running=bot_running,
-                           error=bot_error,
-                           discord_import_error=DISCORD_IMPORT_ERROR)
-
 # Tambahkan di bagian atas sebelum bot dijalankan
 responded_users = set()
 
@@ -165,6 +157,13 @@ async def on_message(message):
         print(f"[INFO] Replied once to: {message.author} ({message.author.id})")
     except Exception as e:
         print(f"[ERROR] Failed to send message to {message.author}: {e}")
+
+@app.route("/", methods=["GET"])
+def index():
+    return render_template("index.html",
+                           running=bot_running,
+                           error=bot_error,
+                           discord_import_error=DISCORD_IMPORT_ERROR)
 
 @app.route("/start", methods=["POST"])
 def start():
