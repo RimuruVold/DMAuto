@@ -4,13 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Discord Auto Reply — Cyberpanel</title>
-  <!-- pakai url_for supaya Flask menemukan file statis -->
-  <link rel="stylesheet" href="static/styles.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- moving headbar -->
   <div class="headbar">
     <div class="marquee">
-      ⚠ FOR LAB USE ONLY — USE ONLY WITH TEST ACCOUNTS ⚠  •  DO NOT USE WITH MAIN ACCOUNT  •  FOR DEMO/RESEARCH ONLY
+      ⚠ FOR LAB USE ONLY — USE ONLY WITH TEST ACCOUNTS ⚠ &nbsp;&nbsp; • &nbsp;&nbsp; DO NOT USE WITH MAIN ACCOUNT &nbsp;&nbsp; • &nbsp;&nbsp; FOR DEMO/RESEARCH ONLY
     </div>
   </div>
 
@@ -20,9 +20,8 @@
       <p class="subtitle">Dark • Futuristic • Turquoise</p>
 
       <div class="card control-card">
-        <!-- START: kirim ke root ("/") dengan field action=start -->
-        <form action="/" method="POST">
-          <input type="hidden" name="action" value="start">
+        <!-- Form START bot -->
+        <form action="/start" method="POST">
           <label>Discord User Token</label>
           <input name="token" type="password" placeholder="Masukkan token akun percobaan" required>
 
@@ -34,9 +33,8 @@
           </div>
         </form>
 
-        <!-- STOP: kirim ke root ("/") dengan field action=stop -->
-        <form action="/" method="POST" style="margin-top:10px;">
-          <input type="hidden" name="action" value="stop">
+        <!-- Form STOP bot -->
+        <form action="/stop" method="POST" style="margin-top:10px;">
           <div class="buttons">
             <button type="submit" class="btn stop">Stop Bot</button>
           </div>
