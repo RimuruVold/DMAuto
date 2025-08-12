@@ -8,6 +8,19 @@ client = None
 bot_thread = None
 error = None
 
+responded_users = set()  # Simpan ID user yang sudah dibalas
+
+@bot.event
+async def on_message(message):
+    if message.author.id == bot.user.id:
+        return
+
+    # Balas hanya jika ini DM
+    if isinstance(message.channel, discord.DMChannel):
+        if message.author.id not in responded_users:
+            await message.channel.send(REPLY_MESSAGE)
+            responded_users.add(message.author.id)  # tandai sudah dibalas
+
 def run_bot(token, reply_text):
     global client, error
     intents = discord.Intents.default()
